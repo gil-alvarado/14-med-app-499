@@ -55,10 +55,10 @@
 
     <TextView
         android:id="@+id/textView5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="372dp"
+        android:layout_height="226dp"
         android:gravity="center"
-        android:text="FORMATTED\nDATA"
+        android:text="FORMATTED\nDATA\nGOES HERE"
         android:textSize="@android:dimen/app_icon_size"
         app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintEnd_toEndOf="parent"
