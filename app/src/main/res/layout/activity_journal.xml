@@ -48,7 +48,7 @@
         android:layout_width="160dp"
         android:layout_height="98dp"
         android:layout_marginTop="28dp"
-        android:text="SHARE\nEXPORT"
+        android:text="SHARE\nEXPORT\n(fix this)"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline9" />
