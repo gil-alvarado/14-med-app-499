@@ -24,6 +24,8 @@ import java.util.Calendar;
 
 /*
 UPDATE DATABASE FOR DOSE AND DATE
+
+WORK IN PROGRESS
  */
 
 public class enterDataActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener{
