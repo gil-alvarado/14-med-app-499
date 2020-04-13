@@ -1,84 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".enterDataActivity">
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="20dp"
-        app:layout_constraintGuide_percent="0.0" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="20dp"
-        app:layout_constraintGuide_percent="0.5" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="20dp"
-        app:layout_constraintGuide_percent="1.0" />
-
-    <EditText
-        android:id="@+id/medicationQuantity_editText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:ems="10"
-        android:hint="Quantity"
-        android:inputType="number"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/medicationName_editText"
-        tools:ignore="MissingConstraints" />
-
-    <EditText
-        android:id="@+id/refills_editText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:ems="10"
-        android:hint="Refills"
-        android:inputType="number"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/medicationQuantity_editText"
-        tools:ignore="MissingConstraints" />
-
-    <EditText
-        android:id="@+id/medicationName_editText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="196dp"
-        android:ems="10"
-        android:hint="Medication Name"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
-
-    <Button
-        android:id="@+id/goTimeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="to time"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/refills_editText" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -201,29 +121,51 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Currently not in use"
+                android:text="RSX #"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <EditText
-                android:id="@+id/editText4"
+                android:id="@+id/RSX_editText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:hint="Currently not in use" />
+                android:hint="prescription RSX"
+                android:inputType="number" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearLayout6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
+            android:layout_gravity="center"
             android:layout_weight="2"
             android:orientation="vertical"
             android:weightSum="2">
-
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Set Dosage"
+                android:id="@+id/setDosage"
+                android:onClick="showNumberPicker"
+                android:gravity="center"
+                android:textSize="30sp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Set Days"
+                android:id="@+id/setDays"
+                android:gravity="center"
+                android:textSize="30sp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Set Alarm"
+                android:id="@+id/setAlarm"
+                android:gravity="center"
+                android:textSize="30sp"/>
             <EditText
-                android:id="@+id/Description_textView"
+                android:id="@+id/Description_editText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -237,8 +179,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_weight="2"
-            android:orientation="vertical"
-            android:weightSum="2">
+            android:weightSum="2"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/nextButton"
@@ -246,10 +188,40 @@
                 android:layout_height="match_parent"
                 android:background="#00BCD4"
                 android:gravity="center"
+                android:layout_weight="1"
                 android:text="NEXT:\ntime selection"
                 android:textSize="20dp" />
-        </LinearLayout>
+            <Button
+                android:id="@+id/viewDataButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#00FBD4"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:text="view Data"
+                android:textSize="20dp" />
 
+            <Button
+                android:id="@+id/updateButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#FD7C53"
+                android:gravity="center"
+                android:text="Update Data"
+                android:textSize="20dp" />
+            <!--
+            <Button
+                android:id="@+id/deleteDataButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="#00FBD4"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:text="Update Data"
+                android:textSize="20dp" />
+                -->
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>
