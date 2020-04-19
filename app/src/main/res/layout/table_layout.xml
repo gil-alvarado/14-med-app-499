@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TableLayout
+        android:id="@+id/tblTop10List"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="23dp"
+        android:stretchColumns="*" >
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1" >
+
+            <TextView
+                android:id="@+id/tableCell_name"
+                android:layout_weight=".5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+
+                android:paddingLeft="8dp"
+                android:text="NAME: "
+                android:layout_column="0"
+                />
+
+            <TextView
+                android:id="@+id/tableCell_RSX"
+                android:textStyle="bold"
+                android:layout_weight=".5"
+
+                android:paddingLeft="4dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="RSX#: "
+                android:layout_column="1"
+                />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1" >
+
+            <TextView
+                android:id="@+id/tableCell_dose"
+                android:layout_weight=".5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:paddingLeft="8dp"
+                android:text="DOSE: "
+                android:layout_column="0"
+                />
+
+            <TextView
+                android:id="@+id/tableCell_date"
+                android:layout_weight=".5"
+                android:textStyle="bold"
+                android:paddingLeft="4dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="DATE:  "
+                android:layout_column="1"
+                />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1" >
+
+            <TextView
+                android:id="@+id/tableCell_qty"
+                android:layout_weight=".5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:paddingLeft="8dp"
+                android:text="QUANTITY: "
+                android:layout_column="0"
+                />
+
+            <TextView
+                android:id="@+id/tableCell_intake"
+                android:layout_weight=".5"
+                android:paddingLeft="4dp"
+                android:layout_width="0dp"
+                android:textStyle="bold"
+                android:layout_height="wrap_content"
+                android:text="TAKEN: "
+                android:layout_column="1"
+                />
+        </TableRow>
+        <TableRow android:id="@+id/tableRow4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/tableCell_refill"
+                android:layout_weight=".5"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_column="0"
+                android:paddingLeft="8dp"
+                android:textStyle="bold"
+                android:text="REFILL: " />
+            <TextView
+                android:id="@+id/blank"
+                android:layout_weight=".5"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_column="0"
+                android:paddingLeft="8dp"/>
+
+
+        </TableRow>
+        <TableRow android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/tableCell_info"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:paddingLeft="8dp"
+                android:text="INFO/COMMENTS: "
+                android:textStyle="bold" />
+        </TableRow>
+
+
+    </TableLayout>
+
+
+</LinearLayout>

@@ -123,18 +123,26 @@ public class enterDataActivity extends AppCompatActivity implements NumberPicker
         });
     }
     //------------------------------------------------------------
-    public void addData(){
+    //DB:
+    //    ID | NAME | RSX | DOSE | QUANTITY | REFILLS | DATE | TAKEN | INFO
+    //
+    private void addData(){
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean inserted = myDB.insertData(drugName.getText().toString(),
-                        drugQuantity.getText().toString(), drugRefills.getText().toString(),
-                        drugRSX.getText().toString(), drugInfo.getText().toString());
-
+//                boolean inserted = myDB.insertData(drugName.getText().toString(),
+//                        drugQuantity.getText().toString(), drugRefills.getText().toString(),
+//                        drugRSX.getText().toString(), drugInfo.getText().toString());
+                boolean inserted = myDB.insertData(drugName.getText().toString(), drugRSX.getText().toString(),
+                        "XXmg", drugQuantity.getText().toString(),drugRefills.getText().toString(),
+                        "xx-xx-xxx","Y/N", drugInfo.getText().toString());
                 if(inserted)
                     Toast.makeText(enterDataActivity.this,  "Data Inserted", Toast.LENGTH_LONG).show();
                 else
                     Toast.makeText(enterDataActivity.this,  "Something went wrong", Toast.LENGTH_LONG).show();
+
+                Intent intent = new Intent(enterDataActivity.this, MainActivity.class);
+                startActivity(intent);
 
                 //NOTE: STILL DIDN'T ADD TIME!!!
             }
@@ -154,7 +162,7 @@ public class enterDataActivity extends AppCompatActivity implements NumberPicker
                         return;
                     }
 
-                    StringBuffer buffer = new StringBuffer();
+                    StringBuilder buffer = new StringBuilder();
                     while(result.moveToNext()){
                         buffer.append("ID: " + result.getString(0) + "\n");
                         buffer.append("NAME: " + result.getString(1) + "\n");

@@ -8,6 +8,11 @@ import android.widget.Button;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.TextView;
+
+/*
+DON'T FORGET TO DECREMENT QTY ONCE USER CONFIRMS INTAKE
+ */
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -22,18 +27,6 @@ public class MainActivity extends AppCompatActivity {
         Button journalButton = (Button)findViewById(R.id.journalButton);
         Button communityButton = (Button)findViewById(R.id.communityButton);
 
-        /*
-        //First Test
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //BEGIN ON CLICK
-                EditText userName = (EditText) findViewById(R.id.usernameEditText);
-                EditText password = (EditText) findViewById(R.id.passwordEditText);
-
-            }
-        });
- */
 //----------------------------------------------------------------------------------
         //go to second activity
 //----------------------------------------------------------------------------------
@@ -55,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         journalButton.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //BEGIN ON CLICK
+
                 goToJournalActivity();
             }
         });
@@ -69,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
 //----------------------------------------------------------------------------------
     }
 
+//    public  void showJournal(View view){
+//        Intent intent = new Intent(MainActivity.this, JournalActivity.class);
+//        startActivity(intent);
+//    }
 
 //----------------------------------------------------------------------------------
 //ACTIVITY Functions
