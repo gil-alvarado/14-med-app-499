@@ -1,34 +1,39 @@
-package com.example.randomizer;
+package com.example.randomizer.data;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.CursorAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
-public class DataHelper extends SQLiteOpenHelper {
+public class MedicationDataHelper extends SQLiteOpenHelper {
 
     //    ID 1 | NAME 2| RSX 3| DOSE 4| QUANTITY 5|
     //    REFILLS 6| DATE 7| TAKEN 8| INFO 9
-    public static final String DATABASE_NAME = "Prescriptions.db";
-    public static final String TABLE_NAME = "PRESCRIPTION_DETAILS";
+    private static final String DATABASE_NAME_2 = "medAppData.db";
+
+    private static final String DATABASE_NAME = "Prescriptions.db";
+    private static final String TABLE_NAME = "PRESCRIPTION_DETAILS";
     public static final String COL_1 = "DRUG_ID";//
 
-    public static final String COL_2 = "NAME";//
-    public static final String COL_3 = "RSX";//
-    public static final String COL_4 = "DOSE";
-    public static final String COL_5 = "QUANTITY";//
-    public static final String COL_6 = "REFILLS";//
-    public static final String COL_7 = "DATE";
-    public static final String COL_8 = "TAKEN";
-    public static final String COL_9 = "INFO";//
+    private static final String COL_2 = "NAME";//
+    private static final String COL_3 = "RSX";//
+    private static final String COL_4 = "DOSE";
+    private static final String COL_5 = "QUANTITY";//
+    private static final String COL_6 = "REFILLS";//
+    private static final String COL_7 = "DATE";
+    private static final String COL_8 = "TAKEN";
+    private static final String COL_9 = "INFO";//
+    private static final String COL_10 = "CODES";
 
     //creating the database
-    public DataHelper(@Nullable Context context) {
+    public MedicationDataHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, 1);
     }
     //------------------------------------------------------------------------------
@@ -39,11 +44,11 @@ public class DataHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-//        sqLiteDatabase.execSQL("CREATE TABLE " + TABLE_NAME + " (DRUG_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-//                " NAME TEXT, QUANTITY TEXT, REFILLS TEXT, RSX TEXT, INFO TEXT)");
         sqLiteDatabase.execSQL("CREATE TABLE " + TABLE_NAME + " (DRUG_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
                 " NAME TEXT, RSX TEXT, DOSE TEXT, QUANTITY TEXT, REFILLS TEXT," +
-                " DATE TEXT, TAKEN TEXT, INFO TEXT)");
+                " DATE TEXT, TAKEN TEXT, INFO TEXT, CODES TEXT)");
+
+
     }
     //------------------------------------------------------------------------------
     //validate DB
@@ -58,7 +63,7 @@ public class DataHelper extends SQLiteOpenHelper {
 //    public boolean insertData(String name, String quantity,
 //                              String refills, String rsx, String info){
     public boolean insertData(String name, String rsx, String dose, String qty,
-                              String refills, String date, String t, String info){
+                              String refills, String date, String t, String info, String code){
         SQLiteDatabase db = this.getWritableDatabase();//for checking
 
 
@@ -71,13 +76,26 @@ public class DataHelper extends SQLiteOpenHelper {
         contentVal.put(COL_7, date);
         contentVal.put(COL_8, t);
         contentVal.put(COL_9, info);
+        contentVal.put(COL_10, code);
+
+//        AlarmDataContainer.getInstance().getMedicationAlarmDatumEntries()
+//                .add(new MedicationAlarmDataEntry(name, rsx,dose, qty, refills, date, t, info));
 
         long result = db.insert(TABLE_NAME, null, contentVal);
 
+        db.close();
         if(result == -1)
             return false;
         else
             return true;
+    }
+    //----------------------------------------------------------------------
+    public Cursor getCertainMed(String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor result =  db.rawQuery("SELECT DRUG_ID FROM PRESCRIPTION_DETAILS " +
+                "WHERE NAME = '" + name +"' ",null);
+
+        return result;
     }
     //----------------------------------------------------------------------
     public Cursor getAllData(){

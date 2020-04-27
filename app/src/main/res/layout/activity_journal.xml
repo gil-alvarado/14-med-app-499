@@ -2,18 +2,39 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:weightSum="100"
+    android:background="@color/colorPrimaryDark">
 
-    <Button
-        android:id="@+id/shareButton"
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:onClick="export"
-        android:text="SHARE" />
-
+        android:layout_weight="5">
+        <Button
+            android:id="@+id/goHome"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:onClick="goHomeJournal"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="HOME" />
+        <Button
+            android:id="@+id/shareButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:onClick="export"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Share" />
+    </LinearLayout>
 
     <ListView
+        android:layout_weight="95"
         android:id="@+id/data_listView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:dividerHeight="1.0sp"
+        />
+<!--    android:divider="@android:color/transparent"-->
+
 </LinearLayout>

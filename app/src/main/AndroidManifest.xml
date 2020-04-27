@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.randomizer">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.randomizer"
+    tools:ignore="ExtraText">
 
     <supports-screens
         android:largeScreens="true"
@@ -8,26 +10,26 @@
         android:smallScreens="true"
         android:xlargeScreens="true" />
 
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DrugInformation_Test"></activity>
-        <activity android:name=".JournalActivity" />
-        <activity android:name=".dosageActivity" />
-        <activity android:name=".enterDataActivity" />
-        <activity android:name=".AddMedication" />
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        <activity
+            android:name=".activities.UserConfirmationDialog"
+            android:theme="@style/Theme.AppCompat.Translucent">
+
         </activity>
-        <activity android:name=".Welcome_Splash">
+        <activity android:name=".activities.ViewAlarms_activity" />
+        <activity android:name=".activities.CommunityActivity" /> <!-- <activity android:name=".DrugInformation_Test" /> -->
+        <activity android:name=".activities.JournalActivity" />
+        <activity android:name=".activities.enterDataActivity" />
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -38,13 +40,16 @@
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.randomizer"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
 
+        <receiver android:name=".receivers.AlarmReceiver" />
     </application>
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA"/>
 </manifest>

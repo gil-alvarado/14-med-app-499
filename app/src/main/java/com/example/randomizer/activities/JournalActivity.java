@@ -1,4 +1,4 @@
-package com.example.randomizer;
+package com.example.randomizer.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
@@ -9,23 +9,22 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
+
+import com.example.randomizer.adapters.JournalListAdapter;
+import com.example.randomizer.R;
+import com.example.randomizer.data.MedicationDataHelper;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 
-//DATA LIST
+//TODO: decrement qty in DB, change QTY datatype to int
 
 public class JournalActivity extends AppCompatActivity {
 
-    private static final String FILE_NAME = "example.txt";
     //    ID 1 | NAME 2| RSX 3| DOSE 4| QUANTITY 5|
     //    REFILLS 6| DATE 7| TAKEN 8| INFO 9
 //-----------------------------------------------------
@@ -39,64 +38,23 @@ public class JournalActivity extends AppCompatActivity {
     private ArrayList<String> INFO = new ArrayList<String>();
 
 
-    DataHelper dBHelper;
-    SQLiteDatabase sqLiteDatabase;
-    Cursor cursor;
+    private MedicationDataHelper dBHelper;
+    private Cursor cursor;
 
-    ListView data_ListView;
-    Button shareButton;
+    private ListView data_ListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_journal);
-        dBHelper = new DataHelper(this);//load database
-//        shareButton = (Button)findViewById(R.id.shareButton);
+        dBHelper = new MedicationDataHelper(this);//load database
+
         data_ListView = (ListView) findViewById(R.id.data_listView);
 
-//        shareButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(JournalActivity.this, "WORK IN PROGRESS!", Toast.LENGTH_LONG).show();
-//            }
-//        });
     }
-    //---------------------------------------------
-
-//------------------------------------------------------------------------
-    //button "onclick"
-    public void save() throws IOException {
-        //get Data
-        cursor = dBHelper.getAllData();
-//        String text = mEditText.getText().toString();
-        FileOutputStream fos = null;
-
-
-        NAME.clear();
-        QTY.clear();
-        REFILLS.clear();
-        RSX.clear();
-
-
-            cursor.moveToFirst();
-            fos = openFileOutput(FILE_NAME, MODE_PRIVATE);
-//            fos.write(text.getBytes());
-            fos.write(Integer.parseInt(cursor.getString(cursor.getColumnIndex("NAME"))));
-//            fos.write(Integer.parseInt(cursor.getString(cursor.getColumnIndex("QUANTITY"))));
-//            fos.write(Integer.parseInt(cursor.getString(cursor.getColumnIndex("REFILLS"))));
-//            fos.write(Integer.parseInt(cursor.getString(cursor.getColumnIndex("RSX"))));
-
-
-//            mEditText.getText().clear();
-
-
-            Toast.makeText(this, "Saved to " + getFilesDir() + "/" + FILE_NAME,
-                    Toast.LENGTH_LONG).show();
-
-    }
-    //-------------------------------------------------------
+//    ------------------------------------------------------------------------
+//    ------------------------------------------------------------------------
     public void export(View view){
         //generate data
         StringBuilder data = new StringBuilder();
@@ -125,17 +83,17 @@ public class JournalActivity extends AppCompatActivity {
             //saving the file into device
             //provide file name
 
-            FileOutputStream out = openFileOutput("data.csv", Context.MODE_PRIVATE);
+            FileOutputStream out = openFileOutput("medication-data.csv", Context.MODE_PRIVATE);
             out.write((data.toString()).getBytes());
             out.close();
 
-            //exporting
+            //exporting/set permissions
             Context context = getApplicationContext();
-            File filelocation = new File(getFilesDir(), "data.csv");
-            Uri path = FileProvider.getUriForFile(context, "com.example.randomizer", filelocation);
+            File fileLocation = new File(getFilesDir(), "medication-data.csv");
+            Uri path = FileProvider.getUriForFile(context, "com.example.randomizer", fileLocation);
             Intent fileIntent = new Intent(Intent.ACTION_SEND);
             fileIntent.setType("text/csv");
-            fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Data");
+            fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Medication Data");
             fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             fileIntent.putExtra(Intent.EXTRA_STREAM, path);
             startActivity(Intent.createChooser(fileIntent, "Send mail"));
@@ -143,7 +101,7 @@ public class JournalActivity extends AppCompatActivity {
         catch(Exception e){
             e.printStackTrace();
         }
-
+        cursor.close();
 
     }
     //---------------------------------------------------------
@@ -152,9 +110,8 @@ public class JournalActivity extends AppCompatActivity {
         displayData();
         super.onResume();
     }
-
+//  ---------------------------------------------------------------------------------------
     private void displayData() {
-//        sqLiteDatabase = dBHelper.getReadableDatabase();
         cursor = dBHelper.getAllData();//sqLiteDatabase.rawQuery("SELECT * FROM  PRESCRIPTION_DETAILS",null);
 
         NAME.clear();
@@ -180,11 +137,15 @@ public class JournalActivity extends AppCompatActivity {
         }
 
 
-//        ListAdapter adapter = new ListAdapter(JournalActivity.this,NAME, QTY,REFILLS,RSX);
-        ListAdapter adapter = new ListAdapter(JournalActivity.this,NAME,RSX,DOSE,QTY,REFILLS,DATE,TAKEN,INFO);
+        JournalListAdapter adapter = new JournalListAdapter(JournalActivity.this,NAME,RSX,DOSE,QTY,REFILLS,DATE,TAKEN,INFO);
 
         data_ListView.setAdapter(adapter);
 
         cursor.close();
+    }
+
+    public void goHomeJournal(View view) {
+        Intent intent = new Intent (this, MainActivity.class);
+        startActivity(intent);
     }
 }

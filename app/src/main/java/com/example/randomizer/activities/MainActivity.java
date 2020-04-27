@@ -1,4 +1,4 @@
-package com.example.randomizer;
+package com.example.randomizer.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.os.Bundle;
-import android.widget.EditText;
-import android.widget.TextView;
+
+import com.example.randomizer.R;
 
 /*
 DON'T FORGET TO DECREMENT QTY ONCE USER CONFIRMS INTAKE
@@ -62,20 +62,15 @@ public class MainActivity extends AppCompatActivity {
 //----------------------------------------------------------------------------------
     }
 
-//    public  void showJournal(View view){
-//        Intent intent = new Intent(MainActivity.this, JournalActivity.class);
-//        startActivity(intent);
-//    }
-
 //----------------------------------------------------------------------------------
 //ACTIVITY Functions
 //----------------------------------------------------------------------------------
     private void goToAddMedicationActivity(){
-        Intent intent = new Intent(MainActivity.this, AddMedication.class);
+        Intent intent = new Intent(MainActivity.this, enterDataActivity.class);
         startActivity(intent);
     }
     private void goToViewAlarms(){
-        Intent intent = new Intent(MainActivity.this, AddMedication.class);
+        Intent intent = new Intent(MainActivity.this, ViewAlarms_activity.class);
         startActivity(intent);
     }
     private void goToJournalActivity(){
@@ -83,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
     private void goToCommunityActivity(){
-        Intent intent = new Intent (MainActivity.this, AddMedication.class);
+        Intent intent = new Intent (MainActivity.this, CommunityActivity.class);
+        startActivity(intent);
     }
+
+
 }

@@ -1,128 +1,133 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/alarm_item"
+    android:layout_width="match_parent"
+    android:layout_height="86dp"
+    android:background="#EDEBC9">
+
     <TableLayout
         android:id="@+id/tblTop10List"
+        android:paddingTop="1dp"
+        android:paddingBottom="1dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:layout_marginTop="23dp"
-        android:stretchColumns="*" >
+        android:background="#EDEBC9"
+        android:stretchColumns="*">
 
         <TableRow
             android:id="@+id/tableRow1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:weightSum="1" >
+            android:weightSum="1">
 
             <TextView
                 android:id="@+id/tableCell_name"
-                android:layout_weight=".5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
+                android:layout_column="0"
+                android:layout_weight=".5"
 
                 android:paddingLeft="8dp"
                 android:text="NAME: "
-                android:layout_column="0"
-                />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tableCell_RSX"
-                android:textStyle="bold"
-                android:layout_weight=".5"
-
-                android:paddingLeft="4dp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="RSX#: "
+
                 android:layout_column="1"
-                />
+                android:layout_weight=".5"
+                android:paddingLeft="4dp"
+                android:text="RSX#: "
+                android:textStyle="bold" />
         </TableRow>
 
         <TableRow
             android:id="@+id/tableRow2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:weightSum="1" >
+            android:weightSum="1">
 
             <TextView
                 android:id="@+id/tableCell_dose"
-                android:layout_weight=".5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
+                android:layout_column="0"
+                android:layout_weight=".5"
                 android:paddingLeft="8dp"
                 android:text="DOSE: "
-                android:layout_column="0"
-                />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tableCell_date"
-                android:layout_weight=".5"
-                android:textStyle="bold"
-                android:paddingLeft="4dp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="DATE:  "
                 android:layout_column="1"
-                />
+                android:layout_weight=".5"
+                android:paddingLeft="4dp"
+                android:text="DATE:  "
+                android:textStyle="bold" />
         </TableRow>
 
         <TableRow
             android:id="@+id/tableRow3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:weightSum="1" >
+            android:weightSum="1">
 
             <TextView
                 android:id="@+id/tableCell_qty"
-                android:layout_weight=".5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
+                android:layout_column="0"
+                android:layout_weight=".5"
                 android:paddingLeft="8dp"
                 android:text="QUANTITY: "
-                android:layout_column="0"
-                />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tableCell_intake"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
                 android:layout_weight=".5"
                 android:paddingLeft="4dp"
-                android:layout_width="0dp"
-                android:textStyle="bold"
-                android:layout_height="wrap_content"
                 android:text="TAKEN: "
-                android:layout_column="1"
-                />
+                android:textStyle="bold" />
         </TableRow>
-        <TableRow android:id="@+id/tableRow4"
+
+        <TableRow
+            android:id="@+id/tableRow4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:weightSum="1">
 
             <TextView
                 android:id="@+id/tableCell_refill"
-                android:layout_weight=".5"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_column="0"
+                android:layout_weight=".5"
                 android:paddingLeft="8dp"
-                android:textStyle="bold"
-                android:text="REFILL: " />
+                android:text="REFILL: "
+                android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/blank"
-                android:layout_weight=".5"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_column="0"
-                android:paddingLeft="8dp"/>
+                android:layout_weight=".5"
+                android:paddingLeft="8dp" />
 
 
         </TableRow>
-        <TableRow android:layout_width="match_parent"
+
+        <TableRow
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:weightSum="1">
 
@@ -140,4 +145,4 @@
     </TableLayout>
 
 
-</LinearLayout>
+</RelativeLayout>

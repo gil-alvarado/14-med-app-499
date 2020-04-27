@@ -4,14 +4,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/hp1_textView"
-        android:layout_width="wrap_content"
+<!--    <TextView-->
+<!--        android:id="@+id/hp1_textView"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:text="Enter Medication Information"-->
+<!--        android:textSize="24sp" />-->
+    <Button
+        android:id="@+id/OCR_button"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Enter Medication Information"
-        android:textSize="28sp" />
+        android:onClick="openCamera"
+        android:text="OCR">
+
+    </Button>
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -130,7 +137,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:hint="prescription RSX"
+                android:hint="prescription RSX#"
                 android:inputType="number" />
         </LinearLayout>
 
@@ -145,8 +152,16 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Set Dosage"
-                android:id="@+id/setDosage"
+                android:hint="g/IU/mEq/mg"
+                android:id="@+id/setDosage_textView"
+                android:onClick="showDosageDialog"
+                android:gravity="center"
+                android:textSize="30sp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="# pills per day"
+                android:id="@+id/pillPerDay_textView"
                 android:onClick="showNumberPicker"
                 android:gravity="center"
                 android:textSize="30sp"/>
@@ -154,13 +169,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Set Days"
-                android:id="@+id/setDays"
+                android:id="@+id/setDays_textView"
                 android:gravity="center"
-                android:textSize="30sp"/>
+                android:textSize="30sp"
+                android:onClick="showDayPicker"/>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Set Alarm"
+                android:hint="Set Alarm Time"
                 android:id="@+id/setAlarm"
                 android:gravity="center"
                 android:textSize="30sp"/>
@@ -181,7 +198,25 @@
             android:layout_weight="2"
             android:weightSum="2"
             android:orientation="horizontal">
-
+<!--            <Button-->
+<!--                android:id="@+id/viewDataButton"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:background="#00FBD4"-->
+<!--                android:gravity="center"-->
+<!--                android:layout_weight="1"-->
+<!--                android:text="view Data"-->
+<!--                android:textSize="20dp" />-->
+            <Button
+                android:id="@+id/cancelButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#00FBD4"
+                android:gravity="center"
+                android:onClick="goHome"
+                android:layout_weight="1"
+                android:text="CANCEL"
+                android:textSize="20dp" />
             <Button
                 android:id="@+id/nextButton"
                 android:layout_width="match_parent"
@@ -189,19 +224,12 @@
                 android:layout_weight="1"
                 android:background="#00BCD4"
                 android:gravity="center"
-                android:text="INSERT\nDATA"
-                android:textSize="20dp" />
-            <Button
-                android:id="@+id/viewDataButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#00FBD4"
-                android:gravity="center"
-                android:layout_weight="1"
-                android:text="view Data"
+                android:enabled="false"
+                android:onClick="goHome"
+                android:text="ADD"
                 android:textSize="20dp" />
 
-            <Button
+          <!--  <Button
                 android:id="@+id/updateButton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -209,7 +237,7 @@
                 android:background="#FD7C53"
                 android:gravity="center"
                 android:text="Update Data"
-                android:textSize="20dp" />
+                android:textSize="20dp" />-->
             <!--
             <Button
                 android:id="@+id/deleteDataButton"
