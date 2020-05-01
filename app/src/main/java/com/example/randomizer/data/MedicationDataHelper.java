@@ -39,18 +39,19 @@ public class MedicationDataHelper extends SQLiteOpenHelper {
     //------------------------------------------------------------------------------
 
     //DB:
-    //    ID | NAME | RSX | DOSE | QUANTITY | REFILLS | DATE | TAKEN | INFO
+    //    ID | NAME | RSX | DOSE | QUANTITY | REFILLS | DATE | TAKEN | INFO | CODES
     //TV:
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        //TODO: QUANTITY TEXT, change METHODS to INT
         sqLiteDatabase.execSQL("CREATE TABLE " + TABLE_NAME + " (DRUG_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                " NAME TEXT, RSX TEXT, DOSE TEXT, QUANTITY TEXT, REFILLS TEXT," +
+                " NAME TEXT, RSX TEXT, DOSE TEXT, QUANTITY INT, REFILLS TEXT," +
                 " DATE TEXT, TAKEN TEXT, INFO TEXT, CODES TEXT)");
 
 
     }
-    //------------------------------------------------------------------------------
+    //------------------    ------------------------------------------------------------
     //validate DB
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
@@ -59,10 +60,9 @@ public class MedicationDataHelper extends SQLiteOpenHelper {
     }
     //----------------------------------------------------------------------
     //    ID 1 | NAME 2| RSX 3| DOSE 4| QUANTITY 5|
-    //    REFILLS 6| DATE 7| TAKEN 8| INFO 9
-//    public boolean insertData(String name, String quantity,
-//                              String refills, String rsx, String info){
-    public boolean insertData(String name, String rsx, String dose, String qty,
+    //    REFILLS 6| DATE 7| TAKEN 8| INFO 9 | CODES
+
+    public boolean insertData(String name, String rsx, String dose, int qty,
                               String refills, String date, String t, String info, String code){
         SQLiteDatabase db = this.getWritableDatabase();//for checking
 
@@ -71,15 +71,12 @@ public class MedicationDataHelper extends SQLiteOpenHelper {
         contentVal.put(COL_2, name);
         contentVal.put(COL_3, rsx);
         contentVal.put(COL_4, dose);
-        contentVal.put(COL_5, qty);
+        contentVal.put(COL_5, qty);//TYPE INT
         contentVal.put(COL_6, refills);
         contentVal.put(COL_7, date);
         contentVal.put(COL_8, t);
         contentVal.put(COL_9, info);
         contentVal.put(COL_10, code);
-
-//        AlarmDataContainer.getInstance().getMedicationAlarmDatumEntries()
-//                .add(new MedicationAlarmDataEntry(name, rsx,dose, qty, refills, date, t, info));
 
         long result = db.insert(TABLE_NAME, null, contentVal);
 
@@ -90,39 +87,46 @@ public class MedicationDataHelper extends SQLiteOpenHelper {
             return true;
     }
     //----------------------------------------------------------------------
-    public Cursor getCertainMed(String name){
+    private Cursor getCertainMed(String id, String name, String time){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor result =  db.rawQuery("SELECT DRUG_ID FROM PRESCRIPTION_DETAILS " +
-                "WHERE NAME = '" + name +"' ",null);
 
-        return result;
+        int i = Integer.parseInt(id);
+
+        return db.rawQuery("SELECT * FROM PRESCRIPTION_DETAILS " +
+                "WHERE NAME = '" + name +"' AND DRUG_ID = " + i
+                + " AND DATE = '" + time+"'",null);
     }
     //----------------------------------------------------------------------
     public Cursor getAllData(){
 
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor result = db.rawQuery("select * from " + TABLE_NAME, null);
 
-        return result;
+        return db.rawQuery("select * from " + TABLE_NAME, null);
     }
 
     //----------------------------------------------------------------------
-
-    //NOT PERFECT
-    public boolean updateData(String name, String quantity, String refills, String rsx){
+    public int updateData(String ID, String NAME, String TIME, String confirmation, int qty){
 
         SQLiteDatabase db = this.getWritableDatabase();
-
         ContentValues contentVal = new ContentValues();
-        contentVal.put(COL_2, name);
-        contentVal.put(COL_3, quantity);
-        contentVal.put(COL_4, refills);
-        contentVal.put(COL_5, rsx);
-//        contentVal.put(COL_6, info);
+        contentVal.put(COL_8, confirmation);
+        int result;
 
-        db.update(TABLE_NAME, contentVal, "RSX = "+rsx, null);
+        int newQTY = qty - 1;
+        if(confirmation.equals("Y") ) {
+            contentVal.put(COL_5, newQTY);//decremented value
+            result = db.update(TABLE_NAME, contentVal, COL_1 + " = ? AND " + COL_2 + " = ? AND "
+                    + COL_7 + " = ?", new String[]{ID, NAME, TIME});
+        }
+        else {//confirmation == N,
+            result = db.update(TABLE_NAME, contentVal, COL_1 + " = ? AND " + COL_2 + " = ? AND "
+                    + COL_7 + " = ?", new String[]{ID, NAME, TIME});
+        }
 
-        return true;
+        db.close();
+        //only ONE should be updated
+        return result;
+
     }
     //----------------------------------------------------------------------
 }

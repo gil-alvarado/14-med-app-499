@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.randomizer.adapters.JournalListAdapter;
 import com.example.randomizer.R;
@@ -43,13 +44,15 @@ public class JournalActivity extends AppCompatActivity {
 
     private ListView data_ListView;
 
+    private int count;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_journal);
         dBHelper = new MedicationDataHelper(this);//load database
-
+        count = dBHelper.getAllData().getCount();
         data_ListView = (ListView) findViewById(R.id.data_listView);
 
     }
@@ -145,6 +148,9 @@ public class JournalActivity extends AppCompatActivity {
     }
 
     public void goHomeJournal(View view) {
+
+
+        Toast.makeText(this,"# data entries: " + count,Toast.LENGTH_LONG).show();
         Intent intent = new Intent (this, MainActivity.class);
         startActivity(intent);
     }

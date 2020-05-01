@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/alarm_item"
+    android:layout_width="match_parent"
+    android:layout_height="86dp"
+    android:background="#8ED3DC">
+
+    <ImageView
+        android:id="@+id/thumbnail_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/ic_alarm_black_24dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_toLeftOf="@+id/active_image"
+        android:layout_toRightOf="@id/thumbnail_image"
+        android:orientation="horizontal"
+        android:padding="4dp">
+
+        <TableLayout
+            android:id="@+id/tblTop10List"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="5dp"
+            android:stretchColumns="*"
+            android:weightSum="1">
+
+            <TableRow
+                android:id="@+id/tableRow1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:weightSum="1">
+
+                <TextView
+                    android:id="@+id/NAME_TABLE"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="0"
+                    android:gravity="bottom"
+                    android:text="NAME: "
+                    android:textStyle="bold"
+                    android:textSize="14dp"/>
+                  <TextView
+                        android:id="@+id/TIME_TABLE"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_column="0"
+                        android:text="TIME: "
+                      android:layout_gravity="center"
+                      android:gravity="center"
+                        android:textStyle="bold"
+                        android:textSize="20sp"/>
+
+
+            </TableRow>
+
+
+
+
+            <TableRow
+                android:id="@+id/tableRow4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:weightSum="1">
+
+                <TextView
+                    android:id="@+id/INFO_TABLE"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="INFO: "
+                    android:textStyle="bold"
+                    android:textSize="14sp"/>
+            </TableRow>
+
+        </TableLayout>
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/active_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/ic_notifications_on_white_24dp" />
+
+
+</RelativeLayout>

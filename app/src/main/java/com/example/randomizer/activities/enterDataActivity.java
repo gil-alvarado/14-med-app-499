@@ -59,10 +59,11 @@ public class enterDataActivity extends AppCompatActivity
     private Calendar userPickedTime;
 
     ArrayList<String> codes;
-    ArrayList<Integer> codeNumbers;
 
-    public static int count = 0;//TODO: use as requestCode
+    private int count;//TODO: use as requestCode
     private int pillsPerDAY;
+
+    private String userTime = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +89,7 @@ public class enterDataActivity extends AppCompatActivity
         drugTime.addTextChangedListener(userInputWatcher);
         displayDays.addTextChangedListener(userInputWatcher);
         //------------------------------------------------------------
-//        count = myDB.getAllData().getCount();//TODO: requestCode
+        count = myDB.getAllData().getCount();//TODO: requestCode
         //---------------------------------
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
 
@@ -148,6 +149,7 @@ public class enterDataActivity extends AppCompatActivity
     //before adding data, confirm user input
     private void addData(){
         addData_Button.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
 
@@ -187,7 +189,7 @@ public class enterDataActivity extends AppCompatActivity
 
                 builder.setMessage(buffer.toString());
 
-                final String code = codes.toString();
+                final String code = String.join(" ", codes);
                 //if true, proceed to add data to DB
                 //REMINDER: add codes
                 builder.setPositiveButton("Confirm",
@@ -195,10 +197,12 @@ public class enterDataActivity extends AppCompatActivity
                             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+
+//                                drugQuantity.getText().toString()
                                 boolean inserted = myDB.insertData(drugName.getText().toString(), drugRSX.getText().toString(),
-                                        drugDosage.getText().toString(), drugQuantity.getText().toString(),drugRefills.getText().toString(),
-                                        DateFormat.getTimeInstance(DateFormat.SHORT).format(userPickedTime.getTime()),
-                                        "Y/N)", drugInfo.getText().toString(), code);
+                                        drugDosage.getText().toString(), Integer.parseInt(drugQuantity.getText().toString()),drugRefills.getText().toString(),
+                                        userTime, "Y/N", drugInfo.getText().toString(), code);
+//                                DateFormat.getTimeInstance(DateFormat.SHORT).format(userPickedTime.getTime()),//replace with userTime
 //                                -------------------------------------------
 //                                include in DBhelper
 //                                -------------------------------------------
@@ -211,6 +215,7 @@ public class enterDataActivity extends AppCompatActivity
 //                                ADD data to DB if true
 //                                ----------------------------------------------------------------------------------
                                 if(inserted) {
+                                    count++;
                                     Toast.makeText(enterDataActivity.this,"Data inserted", Toast.LENGTH_LONG).show();
                                     startAlarm();
                                     Toast.makeText(enterDataActivity.this,"Alarm created", Toast.LENGTH_LONG).show();
@@ -250,7 +255,13 @@ public class enterDataActivity extends AppCompatActivity
         userPickedTime.set(Calendar.MINUTE, minute);
         userPickedTime.set(Calendar.SECOND, 0);//start alarm at 0 seconds
 
-        updateTimeText(userPickedTime);
+        userTime = userPickedTime.get(Calendar.HOUR_OF_DAY)
+                +":" + userPickedTime.get(Calendar.MINUTE);//TODO: had minute
+        String timeText = "Alarm set for: ";
+        timeText+= DateFormat.getTimeInstance(DateFormat.SHORT).format(userPickedTime.getTime());
+
+        drugTime.setText(timeText);
+//        updateTimeText(userPickedTime);
     }
 
     private void updateTimeText(Calendar c){
@@ -270,14 +281,18 @@ public class enterDataActivity extends AppCompatActivity
 
         Intent intent = new Intent(this, AlarmReceiver.class);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1 , intent, 0);
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1 , intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, count , intent, 0);
 
         if (userPickedTime.before(Calendar.getInstance())) {
             userPickedTime.add(Calendar.DATE, 1);
         }
 
         assert alarmManager != null;
+
+//        userTime = Long.toString(userPickedTime.getTimeInMillis());
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, userPickedTime.getTimeInMillis(), pendingIntent);
+//        alarmManager.setExact(AlarmManager.RTC_WAKEUP,Long.parseLong(userTime), pendingIntent);
     }
 //    ----------------------------------------------------------------------------------
 //    ----------------------------------------------------------------------------------
@@ -306,8 +321,7 @@ public class enterDataActivity extends AppCompatActivity
             public void onClick(DialogInterface dialog, int which) {
                 displayDays.setText("");
                 StringBuffer sb = new StringBuffer();
-                codes = new ArrayList<String>();
-                codeNumbers = new ArrayList<>();
+                codes = new ArrayList<>();
                 String dayDisplay = null;
 
 //----------------------------------------------------------------------------------
@@ -316,21 +330,21 @@ public class enterDataActivity extends AppCompatActivity
                 for (String day : selectedDays) {
                     switch (day){
                         case "Sunday":
-                            codes.add("1");codeNumbers.add(1);displayDays.append("Su, ");break;
+                            codes.add("1");displayDays.append("Su, ");break;
                         case "Monday":
-                            codes.add("2");codeNumbers.add(2);displayDays.append("M, ");break;
+                            codes.add("2");displayDays.append("M, ");break;
                         case "Tuesday":
-                            codes.add("3");codeNumbers.add(3);displayDays.append("Tu, ");break;
+                            codes.add("3");displayDays.append("Tu, ");break;
                         case "Wednesday":
-                            codes.add("4");codeNumbers.add(4);displayDays.append("We, ");break;
+                            codes.add("4");displayDays.append("We, ");break;
                         case "Thursday":
-                            codes.add("5");codeNumbers.add(5);displayDays.append("Th, ");break;
+                            codes.add("5");displayDays.append("Th, ");break;
                         case "Friday":
-                            codes.add("6");codeNumbers.add(6);displayDays.append("Fr, ");break;
+                            codes.add("6");displayDays.append("Fr, ");break;
                         case "Saturday":
-                            codes.add("7");codeNumbers.add(7);displayDays.append("Sa, ");break;
+                            codes.add("7");displayDays.append("Sa, ");break;
                         default:
-                            Toast.makeText(enterDataActivity.this, "Day not selected.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(enterDataActivity.this, "Day not selected.", Toast.LENGTH_SHORT).show();
                     }
 
                 }
@@ -343,8 +357,7 @@ public class enterDataActivity extends AppCompatActivity
                     displayDays.setText("daily");
                 }
                 else{
-
-                    Toast.makeText(enterDataActivity.this,str, Toast.LENGTH_LONG).show();
+                    Toast.makeText(enterDataActivity.this,str, Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -365,7 +378,7 @@ public class enterDataActivity extends AppCompatActivity
 //-----------------------------------------------------------------------------------------------
     @Override
     public void onValueChange(NumberPicker numberPicker, int i, int i1) {
-        displayPillsPerDay.setText(String.valueOf(numberPicker.getValue()) + " per day");
+        displayPillsPerDay.setText(numberPicker.getValue() + " per day");
         setPillsPerDay(numberPicker.getValue());
     }
     public void showNumberPicker(View view){
