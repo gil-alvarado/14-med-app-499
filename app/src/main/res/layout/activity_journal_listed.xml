@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/spinnerTextView"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        tools:text="Select Medication" />
+
+    <LinearLayout
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/spinnerTextView"
+        android:layout_marginTop="1dp"
+        android:orientation="horizontal" >
+        <Spinner
+            android:id="@+id/medicationSpinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+             />
+    </LinearLayout>
+    <ListView
+        android:id="@+id/journalListView_"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottomLayout"
+        android:layout_below="@+id/spinner"
+        />
+    <LinearLayout
+        android:id="@+id/bottomLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal" >
+        <Button
+            android:id="@+id/journalHomeButton"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.50"
+            android:text="load" >
+        </Button>
+        <Button
+            android:id="@+id/journalShareButton"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.50"
+            android:onClick="export"
+            android:text="Share" >
+        </Button>
+    </LinearLayout>
+</RelativeLayout>

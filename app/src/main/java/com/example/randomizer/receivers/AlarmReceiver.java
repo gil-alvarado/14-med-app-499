@@ -3,7 +3,6 @@ package com.example.randomizer.receivers;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-
 import android.database.Cursor;
 import android.widget.Toast;
 
@@ -11,7 +10,6 @@ import androidx.core.app.NotificationCompat;
 
 import com.example.randomizer.data.MedicationDataHelper;
 import com.example.randomizer.helpers.NotificationHelper;
-import com.example.randomizer.activities.UserConfirmationDialog;
 
 import java.util.Calendar;
 
@@ -36,30 +34,34 @@ public class AlarmReceiver extends BroadcastReceiver
 
             int system_hour = calendar.get(Calendar.HOUR_OF_DAY);
             int system_minute = calendar.get(Calendar.MINUTE);
+            StringBuilder stringBuilder = new StringBuilder();
 
             cursor.moveToFirst();
             //loop table
             for(int i = 0; i < cursor.getCount(); i++){//each med/row
 
                 //get each medItem code
-                String []tokens = cursor.getString(9).split("\\s");
+                //    ID 0 | NAME 1| RSX 2| DOSE 3| QUANTITY 4|
+                //    REFILLS 5| DATE 6-------TIME7 | TAKEN 8| INFO 9 | CODES 10
+                String []tokens = cursor.getString(10).split("\\s");
                 for (String token : tokens) {//check each "code"
                     //get alarm to ring on particular day
                     //compare token/code, ID, time
                     //daily
-                    if (token.equals("8")&& cursor.getString(6).equals(system_hour +":"+system_minute)
+                    if (token.equals("8")&& cursor.getString(7).equals(system_hour +":"+system_minute)
                             &&(i == (Integer.parseInt(cursor.getString(0)))-1)) {
-                        Intent it = new Intent(context, UserConfirmationDialog.class);
-                        it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(it);
+                        NotificationHelper notificationHelper = new NotificationHelper(context,stringBuilder.append(cursor.getString(1)).toString());
+                        NotificationCompat.Builder nb = notificationHelper.getChannelNotification();
+                        notificationHelper.getManager().notify(1, nb.build());
                         break;
 
-                    } else if (token.equals(day) && cursor.getString(6).equals(system_hour +":"+system_minute)
+                    } else if (token.equals(day) && cursor.getString(7).equals(system_hour +":"+system_minute)
                             &&(i == (Integer.parseInt(cursor.getString(0)))-1)) {
 
-                        Intent it = new Intent(context, UserConfirmationDialog.class);
-                        it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(it);
+                        stringBuilder.append(cursor.getString(1));
+                        NotificationHelper notificationHelper = new NotificationHelper(context,stringBuilder.append(cursor.getString(1)).toString());
+                        NotificationCompat.Builder nb = notificationHelper.getChannelNotification();
+                        notificationHelper.getManager().notify(1, nb.build());
                         break;
                     }
                 }
@@ -67,9 +69,12 @@ public class AlarmReceiver extends BroadcastReceiver
             }
         }
         cursor.close();
+
 //        NotificationHelper notificationHelper = new NotificationHelper(context);
 //        NotificationCompat.Builder nb = notificationHelper.getChannelNotification();
 //        notificationHelper.getManager().notify(1, nb.build());
+
+
     }
 
 

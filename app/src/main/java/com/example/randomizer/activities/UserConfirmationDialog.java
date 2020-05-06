@@ -1,25 +1,26 @@
 package com.example.randomizer.activities;
 
-import androidx.appcompat.app.AlertDialog;
-
-import android.app.PendingIntent;
+import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
-
-import android.app.Activity;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.View;
+import android.text.InputType;
 import android.view.Window;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.example.randomizer.data.MedicationDataHelper;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 //TODO: access DB, decrement qty if user confirms intake
 public class UserConfirmationDialog extends Activity {
@@ -28,30 +29,30 @@ public class UserConfirmationDialog extends Activity {
     private Intent intent;
     private String name, time, id;
     private int qty;
-    private Cursor cursor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        intent = new Intent(this, MainActivity.class);
-        Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        if (alarmUri == null)
-            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-        final Ringtone ringtone = RingtoneManager.getRingtone(this, alarmUri);
-        ringtone.play();
+        intent = new Intent(this, JournalActivity.class);
+//        Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+//        if (alarmUri == null)
+//            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//
+//        ringtone = RingtoneManager.getRingtone(this, alarmUri);
+//        ringtone.play();
 //        ----------------------------------------------------------------------------
 //        ----------------------------------------------------------------------------
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
-        builder.setTitle("VALIDATION");
-        builder.setMessage("did you take your medication?");
+        builder.setTitle("ALERT!");
+//        builder.setMessage("did you take your medication?");
 //        ----------------------------------------------------------------------------
 //        getData
 //        ----------------------------------------------------------------------------
 
         dbHelper = new MedicationDataHelper(this);//UserCon.this
-        cursor = dbHelper.getAllData();
+        Cursor cursor = dbHelper.getAllData();
 
         if(cursor.equals(null))
             Toast.makeText(this,"this should not print",Toast.LENGTH_LONG).show();
@@ -65,26 +66,26 @@ public class UserConfirmationDialog extends Activity {
             int system_minute = calendar.get(Calendar.MINUTE);
 
             cursor.moveToFirst();
-            //loop table
+            //loop table until CURRENT DAY/TIME matches USER INPUT DATA
             for(int i = 0; i < cursor.getCount(); i++){//each med/row
 
-                //    ID 1 | NAME 2| RSX 3| DOSE 4| QUANTITY 5|
-                //    REFILLS 6| DATE 7| TAKEN 8| INFO 9 | CODES
-                String []tokens = cursor.getString(9).split("\\s");
+                //    ID 0 | NAME 1| RSX 2| DOSE 3| QUANTITY 4|
+                //    REFILLS 5| DATE 6-------TIME7 | TAKEN 8| INFO 9 | CODES 10
+                String []tokens = cursor.getString(10).split("\\s");
                 for (String token : tokens) {//check each "code"
-                    if (token.equals("8")&& cursor.getString(6).equals(system_hour +":"+system_minute)
-                            &&(i == (Integer.parseInt(cursor.getString(0)))-1)) {
+                    if (token.equals("8")&& cursor.getString(7).equals(system_hour +":"+system_minute)
+                            &&(i == (Integer.parseInt(cursor.getString(0)))-1)) {//match
                         name = cursor.getString(1);
                         id = cursor.getString(0);
-                        time = cursor.getString(6);
+                        time = cursor.getString(7);
                         qty = Integer.parseInt(cursor.getString(4));
                         break;
 
-                    } else if (token.equals(day) && cursor.getString(6).equals(system_hour +":"+system_minute)
-                            &&(i == (Integer.parseInt(cursor.getString(0)))-1)) {
+                    } else if (token.equals(day) && cursor.getString(7).equals(system_hour +":"+system_minute)
+                            &&(i == (Integer.parseInt(cursor.getString(0)))-1)) {//match
                         name = cursor.getString(1);
                         id = cursor.getString(0);
-                        time = cursor.getString(6);
+                        time = cursor.getString(7);
                         qty = Integer.parseInt(cursor.getString(4));
                         break;
                     }
@@ -93,44 +94,79 @@ public class UserConfirmationDialog extends Activity {
             }
             cursor.close();
         }
-
+        builder.setMessage("did you take your " +name +" yet?");
 //        ----------------------------------------------------------------------------
 //        decrement, update "TAKEN" = Y
-//        update file?
 //        ---------------------------------------------------------------------------
         builder.setPositiveButton("YES",
             new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-            if(dbHelper.updateData(id,name,time,"Y", qty) == 1){
-                cursor.close();
-                    Toast.makeText(UserConfirmationDialog.this, id + " " + name + " " + time, Toast.LENGTH_SHORT).show();//this prints
-                    ringtone.stop();
-                    startActivity(intent);
-                    UserConfirmationDialog.this.finish();
-            }
+                                nextDialog("Y");
                 }
             });
-        //-------------------------------------------------------------------------
-//        ----------------------------------------------------------------------------
-//        SNOOZE
-//        ----------------------------------------------------------------------------
+//        -------------------------------------------------------------------------
         builder.setNegativeButton("NO",
             new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Toast.makeText(UserConfirmationDialog.this, "Leave QTY", Toast.LENGTH_SHORT).show();
-                    UserConfirmationDialog.this.finish();
-//                    intents.remove(0);
-                    if(dbHelper.updateData(id,name,time,"N" ,qty) == 1){
-                        ringtone.stop();
-                        startActivity(intent);
-                    }
+//                    Toast.makeText(UserConfirmationDialog.this, "Leave QTY", Toast.LENGTH_SHORT).show();
+                                nextDialog("N");
                 }
             });
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+//        ----------------------------------------------------------------------------
+//          dialog to update data
+//        ----------------------------------------------------------------------------
+    private void nextDialog(final String confirmation){
+
+        final StringBuilder buffer = new StringBuilder();
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        final EditText comment = new EditText(this);
+        comment.setHint("any comments to add to your journal?");
+        comment.setInputType(InputType.TYPE_CLASS_TEXT);
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Journal Entry");
+        builder.setCancelable(false);
+
+        layout.addView(comment);
+        builder.setView(layout);
+        builder.setPositiveButton("ADD to journal", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                buffer.append(comment.getText());
+
+                //making sure ONLY ONE row is changed(update returns number of rows affected)
+                if (dbHelper.updateData(id, name, time, new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()),
+                confirmation, qty, UserConfirmationDialog.this, buffer.toString()) == 1) {
+//                    ringtone.stop();
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                buffer.append("no comment");
+
+                //making sure ONLY ONE row is changed(update returns number of rows affected)
+                if (dbHelper.updateData(id, name, time, new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()),
+                        confirmation, qty, UserConfirmationDialog.this, buffer.toString()) == 1) {
+//                    ringtone.stop();
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        });
+        builder.show();
     }
 
 }

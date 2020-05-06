@@ -13,11 +13,12 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:layout_marginTop="23dp"
-        android:background="#EDEBC9"
+        android:background="#000000"
         android:stretchColumns="*">
 
         <TableRow
             android:id="@+id/tableRow1"
+            android:background="#FFFFFF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:weightSum="1">
@@ -47,6 +48,7 @@
 
         <TableRow
             android:id="@+id/tableRow2"
+            android:background="#FFFFFF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:weightSum="1">
@@ -74,6 +76,7 @@
 
         <TableRow
             android:id="@+id/tableRow3"
+            android:background="#FFFFFF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:weightSum="1">
@@ -101,6 +104,7 @@
 
         <TableRow
             android:id="@+id/tableRow4"
+            android:background="#FFFFFF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:weightSum="1">
@@ -127,6 +131,7 @@
         </TableRow>
 
         <TableRow
+            android:background="#FFFFFF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:weightSum="1">

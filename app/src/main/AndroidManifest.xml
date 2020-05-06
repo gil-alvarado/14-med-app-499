@@ -27,8 +27,16 @@
         </activity>
         <activity android:name=".activities.ViewAlarms_activity" />
         <activity android:name=".activities.CommunityActivity" /> <!-- <activity android:name=".DrugInformation_Test" /> -->
-        <activity android:name=".activities.JournalActivity" />
-        <activity android:name=".activities.enterDataActivity" />
+
+        <activity android:name=".activities.JournalActivity">
+<!--            android:launchMode="singleTop">-->
+            <intent-filter>
+            <action android:name="com.example.randomizer.JournalActivity" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".activities.enterDataActivity"
+            android:launchMode="singleTop"/>
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,9 +45,10 @@
             </intent-filter>
         </activity>
 
+        <!--            android:name="androidx.core.content.FileProvider"-->
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.randomizer"
+            android:authorities="com.example.randomizer.activities.JournalActivity"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

@@ -1,5 +1,13 @@
+<!--<paths>-->
+<!--    <files-path-->
+<!--        name="data"-->
+<!--        path="."/>-->
+<!--    <external-path-->
+<!--        name="share"-->
+<!--        path="/"/>-->
+<!--</paths>-->
 <paths>
     <files-path
         name="data"
-        path="."/>
+        path="." />
 </paths>

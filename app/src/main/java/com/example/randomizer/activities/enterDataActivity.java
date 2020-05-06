@@ -1,13 +1,5 @@
 package com.example.randomizer.activities;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
-
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -15,33 +7,45 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-import android.widget.NumberPicker;
 
-import com.example.randomizer.dialogs.NumberPickerDialog;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
+
 import com.example.randomizer.R;
-import com.example.randomizer.fragments.TimePickerFragment;
 import com.example.randomizer.data.MedicationDataHelper;
+import com.example.randomizer.dialogs.NumberPickerDialog;
+import com.example.randomizer.fragments.TimePickerFragment;
 import com.example.randomizer.receivers.AlarmReceiver;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 
 public class enterDataActivity extends AppCompatActivity
@@ -51,9 +55,16 @@ public class enterDataActivity extends AppCompatActivity
 
     private AlarmManager alarmManager;
     private MedicationDataHelper myDB;
+    private LinkedHashMap<String, String> map;
 
     private EditText drugName, drugQuantity, drugRefills, drugRSX, drugInfo;
+    private String refills, rsx, info;
+    private List<EditText> editTexts;
+
     private TextView drugTime, displayDays, displayPillsPerDay, drugDosage;
+    private String perDay, dose;
+    private List<TextView> textViews;
+
     private Button addData_Button;
 
     private Calendar userPickedTime;
@@ -70,6 +81,13 @@ public class enterDataActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_input);
 
+
+        SharedPreferences prefs = getSharedPreferences("enterDataPref", MODE_PRIVATE);
+        boolean firstStart = prefs.getBoolean("firstStart", true);
+
+        if (firstStart) {
+            showStartDialog();
+        }
         myDB = new MedicationDataHelper(this);//calls dataHelper constructor (creating DB)
 
         drugName = (EditText) findViewById(R.id.medName_editText);
@@ -78,20 +96,23 @@ public class enterDataActivity extends AppCompatActivity
         drugRSX = (EditText) findViewById(R.id.RSX_editText);
         drugInfo = (EditText) findViewById(R.id.Description_editText);
 
-        drugDosage = (TextView) findViewById(R.id.setDosage_textView);
+        drugName.addTextChangedListener(userInputWatcher);
+        drugQuantity.addTextChangedListener(userInputWatcher);
 
+        drugDosage = (TextView) findViewById(R.id.setDosage_textView);
         drugTime = (TextView) findViewById(R.id.setAlarm);
         displayDays = (TextView) findViewById(R.id.setDays_textView);
         displayPillsPerDay = (TextView) findViewById(R.id.pillPerDay_textView);
 
-        drugName.addTextChangedListener(userInputWatcher);
-        drugQuantity.addTextChangedListener(userInputWatcher);
         drugTime.addTextChangedListener(userInputWatcher);
         displayDays.addTextChangedListener(userInputWatcher);
+        displayPillsPerDay.addTextChangedListener(userInputWatcher);
+
+        map = new LinkedHashMap<>();
         //------------------------------------------------------------
         count = myDB.getAllData().getCount();//TODO: requestCode
         //---------------------------------
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+//        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
 
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
@@ -112,6 +133,7 @@ public class enterDataActivity extends AppCompatActivity
             public void onClick(View v) {
                 Intent intent = new Intent (enterDataActivity.this, MainActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -127,15 +149,18 @@ public class enterDataActivity extends AppCompatActivity
 
         }
 
+//    ------------------------------------------------------------------------------------
+//    Enable buttons until certain textFields are filled
+//    ------------------------------------------------------------------------------------
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String name = drugName.getText().toString().trim();
                 String qty = drugQuantity.getText().toString().trim();
                 String time = drugTime.getText().toString().trim();
                 String days = displayDays.getText().toString().trim();
-
+                String numPills = displayPillsPerDay.getText().toString().trim();
                 addData_Button.setEnabled(!name.isEmpty() && !qty.isEmpty()
-                        && !time.isEmpty() && !days.isEmpty());
+                        && !time.isEmpty() && !days.isEmpty() && !numPills.isEmpty());
         }
 
         @Override
@@ -144,16 +169,24 @@ public class enterDataActivity extends AppCompatActivity
         }
     };
 //      ------------------------------------------------------------
-    //DB: (insert pill per day)
-    //    ID | NAME | RSX | DOSE | QUANTITY | REFILLS | DATE | TAKEN | INFO
-    //before adding data, confirm user input
+//      Retrieve data from text fields
+//    -------------------------------------------------------------
     private void addData(){
         addData_Button.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
 
-                //confirm data
+
+                refills = drugRefills.getText().toString().trim();
+//                refills.trim();
+                rsx = drugRSX.getText().toString().trim();
+                info = drugInfo.getText().toString().trim();
+
+                perDay = displayPillsPerDay.getText().toString().trim();
+                dose = drugDosage.getText().toString().trim();
+
+                //confirm data dialog
                 AlertDialog.Builder builder = new AlertDialog.Builder(enterDataActivity.this);
                 builder.setCancelable(true);
                 builder.setTitle("The information you entered: ");
@@ -166,25 +199,38 @@ public class enterDataActivity extends AppCompatActivity
                 buffer.append("is the following information correct?\n");
                 buffer.append("\nNAME: ").append(drugName.getText().toString()).append("\n");
                 buffer.append("----------------------\n");
-                buffer.append("RSX#: ").append(drugRSX.getText().toString()).append("\n");
-                buffer.append("----------------------\n");
+                if(!drugRSX.getText().toString().isEmpty()) {
+                    buffer.append("RSX#: ").append(drugRSX.getText().toString()).append("\n");
+                    buffer.append("----------------------\n");
+                }else
+                    rsx = "--";
                 buffer.append("QUANTITY: ").append(drugQuantity.getText().toString()).append("\n");
                 buffer.append("----------------------\n");
+
+                if(!drugRefills.getText().toString().isEmpty()){
                 buffer.append("REFILLS: ").append(drugRefills.getText().toString()).append("\n");
                 buffer.append("----------------------\n");
-                buffer.append("DOSAGE: ").append(drugDosage.getText().toString()).append("\n");
-                buffer.append("----------------------\n");
+                }else
+                    refills = "--";
+                if(!drugDosage.getText().toString().isEmpty()) {
+                    buffer.append("DOSAGE: ").append(drugDosage.getText().toString()).append("\n");
+                    buffer.append("----------------------\n");
+                }
+                else
+                    dose = "--";
                 buffer.append("PILL PER DAY: ").append(displayPillsPerDay.getText().toString()).append("\n");
-                buffer.append("----------------------\n");
-                buffer.append("DOSAGE: ").append(drugDosage.getText().toString()).append("\n");
                 buffer.append("----------------------\n");
                 buffer.append("PICKED DAYS: ").append(displayDays.getText().toString()).append("\n");
                 buffer.append("----------------------\n");
                 buffer.append("TIME SELECTED: ").append(DateFormat.getTimeInstance(DateFormat.SHORT)
                         .format(userPickedTime.getTime())).append("\n");
                 buffer.append("----------------------\n");
-                buffer.append("INFO: ").append(drugInfo.getText().toString()).append("\n");
-                buffer.append("----------------------\n\n");
+                if(!drugInfo.getText().toString().isEmpty()) {
+                    buffer.append("INFO: ").append(drugInfo.getText().toString()).append("\n");
+                    buffer.append("----------------------\n\n");
+                }
+                else
+                    info = "--";
 
 
                 builder.setMessage(buffer.toString());
@@ -198,19 +244,12 @@ public class enterDataActivity extends AppCompatActivity
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-//                                drugQuantity.getText().toString()
-                                boolean inserted = myDB.insertData(drugName.getText().toString(), drugRSX.getText().toString(),
-                                        drugDosage.getText().toString(), Integer.parseInt(drugQuantity.getText().toString()),drugRefills.getText().toString(),
-                                        userTime, "Y/N", drugInfo.getText().toString(), code);
+                                boolean inserted = myDB.insertData(drugName.getText().toString(), rsx,
+                                        dose, Integer.parseInt(drugQuantity.getText().toString()),refills,
+                                        new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()).toString(),
+                                        userTime, "Y/N", info, code,enterDataActivity.this);
 //                                DateFormat.getTimeInstance(DateFormat.SHORT).format(userPickedTime.getTime()),//replace with userTime
-//                                -------------------------------------------
-//                                include in DBhelper
-//                                -------------------------------------------
-//                                SQLiteDatabase q = myDB.getWritableDatabase();
-//                                Cursor result =  q.rawQuery("SELECT DRUG_ID FROM PRESCRIPTION_DETAILS " +
-//                                        "WHERE NAME = '" + drugName.getText().toString() +"' ",null);
-//                                int requestCode = Integer.parseInt(result.getString(0));
-//                                --------------------------------------------
+
 //                                ----------------------------------------------------------------------------------
 //                                ADD data to DB if true
 //                                ----------------------------------------------------------------------------------
@@ -221,11 +260,13 @@ public class enterDataActivity extends AppCompatActivity
                                     Toast.makeText(enterDataActivity.this,"Alarm created", Toast.LENGTH_LONG).show();
                                     Intent intent = new Intent(enterDataActivity.this, ViewAlarms_activity.class);
                                     startActivity(intent);
+                                    finish();
                                 }
                                 else {
                                     Toast.makeText(enterDataActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
                                     Intent intent = new Intent(enterDataActivity.this, ViewAlarms_activity.class);
                                     startActivity(intent);
+                                    finish();
                                 }
 
                             }
@@ -261,19 +302,11 @@ public class enterDataActivity extends AppCompatActivity
         timeText+= DateFormat.getTimeInstance(DateFormat.SHORT).format(userPickedTime.getTime());
 
         drugTime.setText(timeText);
-//        updateTimeText(userPickedTime);
     }
 
-    private void updateTimeText(Calendar c){
-
-        String timeText = "Alarm set for: ";
-        timeText+= DateFormat.getTimeInstance(DateFormat.SHORT).format(c.getTime());
-
-        drugTime.setText(timeText);
-    }
-//    ----------------------------------------------------------------------------------
-//              TODO: give each medication their own "requestCode"
-//                 count = myDB.getCount();
+    //    ----------------------------------------------------------------------------------
+//                  give each medication their own "requestCode" to prevent alarms
+//                  from overriding each other
 //    ----------------------------------------------------------------------------------
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void startAlarm() {
@@ -281,7 +314,6 @@ public class enterDataActivity extends AppCompatActivity
 
         Intent intent = new Intent(this, AlarmReceiver.class);
 
-//        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1 , intent, 0);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, count , intent, 0);
 
         if (userPickedTime.before(Calendar.getInstance())) {
@@ -290,11 +322,10 @@ public class enterDataActivity extends AppCompatActivity
 
         assert alarmManager != null;
 
-//        userTime = Long.toString(userPickedTime.getTimeInMillis());
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, userPickedTime.getTimeInMillis(), pendingIntent);
-//        alarmManager.setExact(AlarmManager.RTC_WAKEUP,Long.parseLong(userTime), pendingIntent);
     }
 //    ----------------------------------------------------------------------------------
+//    set days
 //    ----------------------------------------------------------------------------------
     public void showDayPicker(View view) {
 
@@ -320,7 +351,6 @@ public class enterDataActivity extends AppCompatActivity
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 displayDays.setText("");
-                StringBuffer sb = new StringBuffer();
                 codes = new ArrayList<>();
                 String dayDisplay = null;
 
@@ -379,17 +409,16 @@ public class enterDataActivity extends AppCompatActivity
     @Override
     public void onValueChange(NumberPicker numberPicker, int i, int i1) {
         displayPillsPerDay.setText(numberPicker.getValue() + " per day");
-        setPillsPerDay(numberPicker.getValue());
+//        setPillsPerDay(numberPicker.getValue());
     }
     public void showNumberPicker(View view){
         NumberPickerDialog newFragment = new NumberPickerDialog();
         newFragment.setValueChangeListener(this);
         newFragment.show(getSupportFragmentManager(), "time picker");
     }
-    //use to create # of PendingIntents
-    private void setPillsPerDay(int num){
-        pillsPerDAY = num;
-    }
+//    private void setPillsPerDay(int num){
+//        pillsPerDAY = num;
+//    }
 //--------------------------------------------------------------------------------------
 //    Custom alert dialog to get dosage
 //    TODO (optional): add dropdown list (g/mg/IU units)
@@ -451,44 +480,35 @@ public class enterDataActivity extends AppCompatActivity
         }
     }
     //------------------------------------------------------------
-    //testing feature
-    //DB: (insert pill per day)
-    //    ID | NAME | RSX | DOSE | QUANTITY | REFILLS | DATE | TAKEN | INFO
-//    public void viewData(){
-//            viewData.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    result =  myDB.getAllData();
-//
-//                    if(result.getCount() == 0)
-//                    {
-//                        showMessage("ERROR", "NO DATA FOUND");
-//                        return;
-//                    }
-//
-//                    StringBuilder buffer = new StringBuilder();
-//                    while(result.moveToNext()){
-//                        buffer.append("ID: " + result.getString(0) + "\n");
-//                        buffer.append("NAME: " + result.getString(1) + "\n");
-//                        buffer.append("QUANTITY: " + result.getString(4) + "\n");
-//                        buffer.append("REFILLS: " + result.getString(5) + "\n");
-//                        buffer.append("RSX#: " + result.getString(2) + "\n\n");
-//                    }
-//                    //SHOW ALL DATA
-//                    showMessage("Data", buffer.toString());
-//
-//                    result.close();
-//                }
-//            });
-//    }
-//
-//    //------------------------------------------------------------
-//    public void showMessage(String title, String message){
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setCancelable(true);
-//        builder.setTitle(title);
-//        builder.setMessage(message);
-//
-//        builder.show();
-//    }
+    //              dialog activates for every new installation
+    //              data is saved in preferences files
+    //------------------------------------------------------------
+    private void showStartDialog() {
+        TextView cusTitle = new TextView(this);
+        cusTitle.setText("Getting Started");
+        cusTitle.setBackgroundColor(Color.parseColor("#12a3eb"));
+        cusTitle.setPadding(10, 20, 10, 20);
+        cusTitle.setGravity(Gravity.CENTER);
+        cusTitle.setTextColor(Color.WHITE);
+        cusTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
+
+
+        new android.app.AlertDialog.Builder(this)
+//                .setTitle("Getting Started")
+                .setCustomTitle(cusTitle)
+                .setMessage("\nFill out the form, but just know that you must fill out:" +
+                        "\n\nMedication Name\nQuantity\nPills Per Day\nSet Days\nSet Alarm Time\n")
+                .setPositiveButton("GOT IT", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create().show();
+
+        SharedPreferences prefs = getSharedPreferences("enterDataPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("firstStart", false);
+        editor.apply();
+    }
 }

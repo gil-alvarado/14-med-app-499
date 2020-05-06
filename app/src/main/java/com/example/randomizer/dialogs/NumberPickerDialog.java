@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.widget.EditText;
 import android.widget.NumberPicker;
 
 import androidx.fragment.app.DialogFragment;
@@ -25,6 +24,7 @@ public class NumberPickerDialog extends DialogFragment {
         builder.setTitle("# of pills per day");
         builder.setMessage("How often do you take your med?");
 
+        //confirm number, set number
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
